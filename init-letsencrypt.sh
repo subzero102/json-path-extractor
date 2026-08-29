@@ -22,8 +22,8 @@ fi
 
 echo "Creating dummy certificate for $domains..."
 path="/etc/letsencrypt/live/extractjsonpath.com"
-mkdir -p "$data_path/conf/live/extractjsonpath.com"
 docker compose run --rm --entrypoint "\
+  mkdir -p '$path' && \
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1 \
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
