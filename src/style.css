@@ -515,19 +515,48 @@ button{font-family:inherit}
 .tree-comma{margin-left:0}
 .doc-icon{
   margin-left:6px;
-  border:none;
+  border:1px solid transparent;
   background:var(--hover);
   border-radius:4px;
-  padding:1px 5px;
-  font-size:12px;
-  line-height:1;
+  padding:2px 4px;
   cursor:pointer;
-  opacity:0.85;
-  transition:all 0.12s;
+  opacity:0.6;
+  transition:all 0.15s ease;
   flex-shrink:0;
+  color:var(--muted);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  vertical-align:middle;
+}
+.tree-line:hover .doc-icon{
+  opacity:0.9;
   color:var(--text);
 }
-.doc-icon:hover{background:var(--accent); color:#fff; opacity:1; transform:scale(1.05)}
+.doc-icon:hover{
+  background:var(--accent-soft);
+  color:var(--accent);
+  border-color:var(--accent);
+  opacity:1;
+  transform:scale(1.06);
+}
+.doc-icon:focus-visible{
+  outline:2px solid var(--accent);
+  outline-offset:1px;
+  opacity:1;
+}
+.doc-icon svg{
+  display:block;
+  width:12px;
+  height:12px;
+  pointer-events:none;
+}
+.inline-copy-icon{
+  display:inline-block;
+  vertical-align:-1px;
+  margin:0 1px;
+  color:var(--muted);
+}
 .tree-children{
   margin-left:14px;
   padding-left:8px;
