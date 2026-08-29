@@ -34,8 +34,17 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-header">Expanded JSON <small>click 📄 to generate paths</small></div>
+          <div class="card-header">
+            <span>Expanded JSON <small>click 📄 to generate paths</small></span>
+          </div>
           <div class="card-body">
+            <div class="tree-search-bar">
+              <span class="tree-search-icon" aria-hidden="true">🔍</span>
+              <input id="treeSearchInput" type="text" placeholder="Search path, key, label, or value (e.g. Amount by Acct Owner)..." autocomplete="off" spellcheck="false" />
+              <button id="treeSearchClear" type="button" class="btn-clear hidden" aria-label="Clear search" title="Clear search">✕</button>
+              <span id="treeSearchCount" class="search-count hidden"></span>
+            </div>
+            <div id="treeSearchResults" class="tree-search-dropdown hidden"></div>
             <div id="treeContainer" class="tree-scroll" role="tree" aria-label="JSON tree"></div>
           </div>
         </div>
@@ -63,6 +72,11 @@
           <div class="variant">
             <div class="variant-label">Array Wildcard <span class="hint">[*] nearest index</span></div>
             <code id="variantWildcard">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+          <div class="variant variant-filter">
+            <div class="variant-label">Filter Search <span class="hint">[?(@.label == '...')] text filter</span></div>
+            <code id="variantFilter">—</code>
             <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
           </div>
         </div>

@@ -4,9 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JSON PATH Extractor</title>
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <script type="module" crossorigin src="/assets/index-CwHJ7w9i.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CzAEsQne.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="apple-touch-icon" href="/favicon.png" />
+    <script type="module" crossorigin src="/assets/index-D3nvVIwP.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-ryLdrAVt.css">
   </head>
   <body>
     <div class="app">
@@ -34,8 +36,17 @@
           </div>
         </div>
         <div class="card">
-          <div class="card-header">Expanded JSON <small>click 📄 to generate paths</small></div>
+          <div class="card-header">
+            <span>Expanded JSON <small>click 📄 to generate paths</small></span>
+          </div>
           <div class="card-body">
+            <div class="tree-search-bar">
+              <span class="tree-search-icon" aria-hidden="true">🔍</span>
+              <input id="treeSearchInput" type="text" placeholder="Search path, key, label, or value (e.g. Amount by Acct Owner)..." autocomplete="off" spellcheck="false" />
+              <button id="treeSearchClear" type="button" class="btn-clear hidden" aria-label="Clear search" title="Clear search">✕</button>
+              <span id="treeSearchCount" class="search-count hidden"></span>
+            </div>
+            <div id="treeSearchResults" class="tree-search-dropdown hidden"></div>
             <div id="treeContainer" class="tree-scroll" role="tree" aria-label="JSON tree"></div>
           </div>
         </div>
@@ -63,6 +74,11 @@
           <div class="variant">
             <div class="variant-label">Array Wildcard <span class="hint">[*] nearest index</span></div>
             <code id="variantWildcard">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+          <div class="variant variant-filter">
+            <div class="variant-label">Filter Search <span class="hint">[?(@.label == '...')] text filter</span></div>
+            <code id="variantFilter">—</code>
             <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
           </div>
         </div>

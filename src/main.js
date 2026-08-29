@@ -1,5 +1,5 @@
 import './style.css';
-import { buildTree, clearTree } from './treeBuilder.js';
+import { buildTree, clearTree, expandAndHighlightPath, searchJSON } from './treeBuilder.js';
 import { generateVariants } from './pathVariants.js';
 import { evaluate, stringifyResult } from './evaluator.js';
 
@@ -34,11 +34,17 @@ const pathInput = document.getElementById('pathInput');
 const pathOutput = document.getElementById('pathOutput');
 const pathStatus = document.getElementById('pathStatus');
 
+const treeSearchInput = document.getElementById('treeSearchInput');
+const treeSearchClear = document.getElementById('treeSearchClear');
+const treeSearchCount = document.getElementById('treeSearchCount');
+const treeSearchResults = document.getElementById('treeSearchResults');
+
 const variantEls = {
   absolute: document.getElementById('variantAbsolute'),
   bracket: document.getElementById('variantBracket'),
   deepScan: document.getElementById('variantDeepScan'),
   wildcard: document.getElementById('variantWildcard'),
+  filter: document.getElementById('variantFilter'),
 };
 
 let parsedJSON = null;
@@ -74,11 +80,12 @@ const defaultJSON = `{
 }`;
 
 function setVariants(pathArray) {
-  const v = generateVariants(pathArray);
+  const v = generateVariants(pathArray, parsedJSON);
   variantEls.absolute.textContent = v.absolute;
   variantEls.bracket.textContent = v.bracket;
   variantEls.deepScan.textContent = v.deepScan;
   variantEls.wildcard.textContent = v.wildcard;
+  variantEls.filter.textContent = v.filter;
 
   for (const el of Object.values(variantEls)) {
     if (!el.textContent || el.textContent === 'N/A') el.classList.add('empty');
@@ -129,8 +136,22 @@ function evaluateAndRender() {
   }
 }
 
+function resetTreeSearch() {
+  if (treeSearchInput) treeSearchInput.value = '';
+  if (treeSearchClear) treeSearchClear.classList.add('hidden');
+  if (treeSearchCount) {
+    treeSearchCount.textContent = '';
+    treeSearchCount.classList.add('hidden');
+  }
+  if (treeSearchResults) {
+    treeSearchResults.classList.add('hidden');
+    treeSearchResults.innerHTML = '';
+  }
+}
+
 function renderTreeFromText(text) {
   const trimmed = text.trim();
+  resetTreeSearch();
   if (!trimmed) {
     parsedJSON = null;
     hasValidJSON = false;
@@ -260,6 +281,118 @@ jsonInput.addEventListener('scroll', () => {
 });
 
 pathInput.addEventListener('input', evaluateAndRender);
+
+// Tree search logic
+function hideTreeSearchResults() {
+  if (!treeSearchResults) return;
+  treeSearchResults.classList.add('hidden');
+  treeSearchResults.innerHTML = '';
+}
+
+function handleTreeSearch() {
+  if (!treeSearchInput) return;
+  const query = treeSearchInput.value.trim();
+  if (!query || !hasValidJSON || !parsedJSON) {
+    hideTreeSearchResults();
+    treeSearchCount?.classList.add('hidden');
+    treeSearchClear?.classList.add('hidden');
+    return;
+  }
+
+  treeSearchClear?.classList.remove('hidden');
+  const matches = searchJSON(parsedJSON, query, 30);
+
+  if (treeSearchCount) {
+    treeSearchCount.textContent = `${matches.length}${matches.length >= 30 ? '+' : ''} found`;
+    treeSearchCount.classList.remove('hidden');
+  }
+
+  if (matches.length === 0) {
+    treeSearchResults.innerHTML = '<div class="tree-search-empty">No matching keys, values, or labels</div>';
+    treeSearchResults.classList.remove('hidden');
+    return;
+  }
+
+  treeSearchResults.innerHTML = '';
+  for (const match of matches) {
+    const item = document.createElement('div');
+    item.className = 'tree-search-item';
+
+    const variants = generateVariants(match.path, parsedJSON);
+    const suggestedPath = variants.filter !== 'N/A' ? variants.filter : variants.absolute;
+
+    const labelRow = document.createElement('div');
+    labelRow.className = 'search-item-header';
+
+    const matchBadge = document.createElement('span');
+    matchBadge.className = `search-badge badge-${match.type}`;
+    matchBadge.textContent = match.type;
+    labelRow.appendChild(matchBadge);
+
+    const titleSpan = document.createElement('span');
+    titleSpan.className = 'search-item-title';
+    titleSpan.textContent =
+      match.type === 'label' || match.type === 'name'
+        ? `${match.matchVal} (${match.parentKey})`
+        : `${match.matchKey}: ${match.matchVal}`;
+    labelRow.appendChild(titleSpan);
+
+    item.appendChild(labelRow);
+
+    const pathCode = document.createElement('code');
+    pathCode.className = 'search-item-path';
+    pathCode.textContent = suggestedPath;
+    item.appendChild(pathCode);
+
+    item.addEventListener('click', () => {
+      hideTreeSearchResults();
+      expandAndHighlightPath(treeContainer, match.path);
+      onSelectPath(match.path);
+      pathInput.value = suggestedPath;
+      evaluateAndRender();
+    });
+
+    treeSearchResults.appendChild(item);
+  }
+
+  treeSearchResults.classList.remove('hidden');
+}
+
+const debouncedTreeSearch = debounce(handleTreeSearch, 150);
+treeSearchInput?.addEventListener('input', debouncedTreeSearch);
+treeSearchInput?.addEventListener('focus', () => {
+  if (treeSearchInput.value.trim()) handleTreeSearch();
+});
+treeSearchInput?.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    const firstItem = treeSearchResults?.querySelector('.tree-search-item');
+    if (firstItem) {
+      firstItem.click();
+    }
+  } else if (e.key === 'Escape') {
+    hideTreeSearchResults();
+  }
+});
+
+treeSearchClear?.addEventListener('click', () => {
+  if (!treeSearchInput) return;
+  treeSearchInput.value = '';
+  hideTreeSearchResults();
+  treeSearchCount?.classList.add('hidden');
+  treeSearchClear?.classList.add('hidden');
+  treeSearchInput.focus();
+});
+
+document.addEventListener('click', (e) => {
+  if (
+    treeSearchResults &&
+    !treeSearchResults.contains(e.target) &&
+    e.target !== treeSearchInput &&
+    e.target !== treeSearchClear
+  ) {
+    hideTreeSearchResults();
+  }
+});
 
 // Variant click + copy
 for (const [name, el] of Object.entries(variantEls)) {

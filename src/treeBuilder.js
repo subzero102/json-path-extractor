@@ -25,6 +25,9 @@ function createDocIcon(curPath, onSelect) {
 function createNode(value, key, curPath, onSelect, isArrayParent) {
   const node = document.createElement('div');
   node.className = 'tree-node';
+  if (key !== null) {
+    node.dataset.segment = String(key);
+  }
 
   const line = document.createElement('div');
   line.className = 'tree-line';
@@ -211,4 +214,135 @@ export function buildTree(data, container, onSelect) {
 
 export function clearTree(container, message = 'No valid JSON') {
   container.innerHTML = `<div class="tree-empty">${message}</div>`;
+}
+
+export function expandAndHighlightPath(container, pathArray) {
+  if (!container || !Array.isArray(pathArray) || pathArray.length === 0) return null;
+
+  // Ensure root is expanded
+  const rootNode = container.querySelector('.root-node');
+  const rootLine = rootNode?.querySelector('.root-line');
+  const rootChildren = rootNode?.querySelector(':scope > .tree-children');
+  if (rootChildren && rootChildren.classList.contains('collapsed')) {
+    rootChildren.classList.remove('collapsed');
+    const rootToggle = rootLine?.querySelector('.tree-toggle');
+    if (rootToggle) rootToggle.textContent = '▼';
+  }
+
+  let currentParent = rootChildren;
+  let targetLine = null;
+
+  for (let i = 0; i < pathArray.length; i++) {
+    if (!currentParent) break;
+    const segment = String(pathArray[i]);
+    const childNode = Array.from(currentParent.children).find(
+      (el) => el.classList.contains('tree-node') && el.dataset.segment === segment
+    );
+    if (!childNode) break;
+
+    const line = childNode.querySelector(':scope > .tree-line');
+    const children = childNode.querySelector(':scope > .tree-children');
+
+    if (i === pathArray.length - 1) {
+      targetLine = line;
+    }
+
+    if (children && i < pathArray.length - 1) {
+      // Expand ancestor
+      children.classList.remove('collapsed');
+      const toggle = line?.querySelector('.tree-toggle');
+      if (toggle && toggle.classList.contains('expandable')) {
+        toggle.textContent = '▼';
+      }
+      line?.classList.add('expanded');
+      currentParent = children;
+    }
+  }
+
+  if (targetLine) {
+    targetLine.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    targetLine.classList.add('tree-highlight-match');
+    setTimeout(() => {
+      targetLine.classList.remove('tree-highlight-match');
+    }, 2400);
+  }
+
+  return targetLine;
+}
+
+export function searchJSON(data, query, maxResults = 30) {
+  if (!data || !query || !query.trim()) return [];
+  const q = query.trim().toLowerCase();
+  const results = [];
+
+  function walk(val, curPath = [], parentKey = null) {
+    if (results.length >= maxResults) return;
+    if (val === null || val === undefined) return;
+
+    if (typeof val === 'object') {
+      if (!Array.isArray(val)) {
+        if (typeof val.label === 'string' && val.label.toLowerCase().includes(q)) {
+          results.push({
+            path: [...curPath],
+            type: 'label',
+            matchKey: 'label',
+            matchVal: val.label,
+            parentKey: parentKey || '{root}',
+          });
+        } else if (typeof val.name === 'string' && val.name.toLowerCase().includes(q)) {
+          results.push({
+            path: [...curPath],
+            type: 'name',
+            matchKey: 'name',
+            matchVal: val.name,
+            parentKey: parentKey || '{root}',
+          });
+        }
+      }
+
+      if (Array.isArray(val)) {
+        for (let idx = 0; idx < val.length; idx++) {
+          if (results.length >= maxResults) return;
+          walk(val[idx], [...curPath, String(idx)], String(idx));
+        }
+      } else {
+        for (const [k, v] of Object.entries(val)) {
+          if (results.length >= maxResults) return;
+          const kLower = k.toLowerCase();
+          if (kLower.includes(q) && k !== 'label' && k !== 'name') {
+            results.push({
+              path: [...curPath, k],
+              type: 'key',
+              matchKey: k,
+              matchVal:
+                typeof v === 'object' && v !== null
+                  ? Array.isArray(v)
+                    ? `[${v.length}]`
+                    : `{${Object.keys(v).length}}`
+                  : String(v),
+              parentKey: k,
+            });
+          }
+          walk(v, [...curPath, k], k);
+        }
+      }
+    } else {
+      const valStr = String(val);
+      if (valStr.toLowerCase().includes(q)) {
+        const lastKey = curPath[curPath.length - 1];
+        if (lastKey !== 'label' && lastKey !== 'name') {
+          results.push({
+            path: [...curPath],
+            type: 'value',
+            matchKey: lastKey || '',
+            matchVal: valStr,
+            parentKey: lastKey,
+          });
+        }
+      }
+    }
+  }
+
+  walk(data, []);
+  return results;
 }
