@@ -166,7 +166,7 @@ button{font-family:inherit}
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:16px;
-  align-items:start;
+  align-items:stretch;
 }
 .card{
   background:var(--card);
@@ -176,7 +176,7 @@ button{font-family:inherit}
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  min-height:380px;
+  min-height:420px;
 }
 .card-header{
   padding:10px 14px;
@@ -467,7 +467,6 @@ button{font-family:inherit}
   line-height:1.55;
   background:var(--input-bg);
   min-height:340px;
-  max-height:520px;
 }
 .tree-empty{
   color:var(--muted);
@@ -697,8 +696,8 @@ button{font-family:inherit}
 }
 #pathOutput{
   width:100%;
-  min-height:220px;
-  max-height:420px;
+  min-height:500px;
+  max-height:600px;
   border:none;
   padding:12px 14px;
   font-family:var(--mono);
