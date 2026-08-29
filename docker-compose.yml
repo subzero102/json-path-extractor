@@ -1,6 +1,67 @@
 services:
   web:
     build: .
+    image: json-path-extractor:latest
+    container_name: jpe-web
+    user: "101:101"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    tmpfs:
+      - /var/cache/nginx:size=32m
+      - /var/run:size=8m
+      - /tmp:size=16m
+    volumes:
+      - certs:/etc/letsencrypt:ro
+      - certbot-www:/var/www/certbot:ro
     ports:
-      - "8080:80"
+      - "213.210.21.177:8443:8080"
+      - "213.210.21.177:443:8443"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 128M
+        reservations:
+          cpus: "0.10"
+          memory: 32M
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  certbot:
+    image: certbot/certbot:latest
+    container_name: jpe-certbot
+    user: "0:0"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $!; done'"
+    volumes:
+      - certs:/etc/letsencrypt
+      - certbot-www:/var/www/certbot
+    restart: unless-stopped
+    depends_on:
+      - web
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: 128M
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+volumes:
+  certs:
+  certbot-www:

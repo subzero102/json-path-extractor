@@ -14,6 +14,13 @@ When the user says to push to main, commit the changes and run `git push origin 
   - `npm run build` — production build to `dist/`
   - `npm run preview` — preview production build
   - `docker compose up --build` — run built app behind nginx
-- **Requires:** Node.js 18+, npm
-- **Layout:** `index.html` (entry), `src/` (source), `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx.conf`
+  - `./init-letsencrypt.sh` — first-time Let's Encrypt cert bootstrap (run once on the VPS)
+- **Requires:** Node.js 18+, npm, Docker
+- **Deployment (VPS 213.210.21.177, domain extractjsonpath.com):**
+  - DNS A record `extractjsonpath.com` -> `213.210.21.177`
+  - Ports opened in VPS firewall: `443/tcp` (HTTPS), `8443/tcp` (HTTP, used for ACME HTTP-01 challenges)
+  - Container port mapping: host `443` -> container `8443` (TLS), host `8443` -> container `8080` (HTTP/ACME)
+  - First deploy: `./init-letsencrypt.sh`, then `docker compose up -d --build`
+  - Certbot auto-renews every 12h inside the `certbot` service
+- **Layout:** `index.html` (entry), `src/` (source), `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx.conf`, `init-letsencrypt.sh`, `certbot/`
 - **Remote:** `https://github.com/subzero102/json-path-extractor.git` (default branch: `main`)
