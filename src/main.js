@@ -3,6 +3,29 @@ import { buildTree, clearTree } from './treeBuilder.js';
 import { generateVariants } from './pathVariants.js';
 import { evaluate, stringifyResult } from './evaluator.js';
 
+const THEME_KEY = 'json-path-extractor:theme';
+const DEFAULT_THEME = 'dark';
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function getSavedTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function setSavedTheme(theme) {
+  try {
+    localStorage.setItem(THEME_KEY, theme);
+  } catch {}
+}
+
+applyTheme(getSavedTheme() || DEFAULT_THEME);
+
 const jsonInput = document.getElementById('jsonInput');
 const jsonHighlight = document.getElementById('jsonHighlight');
 const treeContainer = document.getElementById('treeContainer');
@@ -267,3 +290,12 @@ for (const [name, el] of Object.entries(variantEls)) {
 jsonInput.value = defaultJSON;
 renderTreeFromText(defaultJSON);
 setVariants([]);
+
+const themeToggle = document.getElementById('themeToggle');
+themeToggle?.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || DEFAULT_THEME;
+  const next = current === 'dark' ? 'light' : 'dark';
+  applyTheme(next);
+  setSavedTheme(next);
+  themeToggle.setAttribute('aria-label', `Switch to ${current} mode`);
+});
