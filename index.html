@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JSON PATH Extractor</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="app-header">
+        <h1>JSON PATH Extractor</h1>
+        <span class="header-sub">Interactive JSONPath tester — client-side only</span>
+      </header>
+
+      <!-- Zone A: Top Split-Pane -->
+      <section class="zone-a" aria-label="Data and Navigation">
+        <div class="card">
+          <div class="card-header">Provide the JSON here: <small>paste &amp; validate</small></div>
+          <div class="card-body">
+            <div class="editor-wrap">
+              <div id="jsonHighlight" class="json-highlight" aria-hidden="true"></div>
+              <textarea id="jsonInput" spellcheck="false" placeholder='Paste JSON here, e.g. {"store":{"book":[]}}'></textarea>
+            </div>
+            <div id="errorMsg" class="error-msg" role="status"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">Expanded JSON <small>click 📄 to generate paths</small></div>
+          <div class="card-body">
+            <div id="treeContainer" class="tree-scroll" role="tree" aria-label="JSON tree"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Zone B: Middle Pane -->
+      <section id="zoneB" class="zone-b" aria-label="Path Variants">
+        <div class="zone-b-header">JSON Path Variants — click any path to test it</div>
+        <div class="variants-grid">
+          <div class="variant">
+            <div class="variant-label">Absolute <span class="hint">dot notation</span></div>
+            <code id="variantAbsolute">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+          <div class="variant">
+            <div class="variant-label">Bracket <span class="hint">['key'] notation</span></div>
+            <code id="variantBracket">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+          <div class="variant">
+            <div class="variant-label">Deep Scan <span class="hint">recursive descent</span></div>
+            <code id="variantDeepScan">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+          <div class="variant">
+            <div class="variant-label">Array Wildcard <span class="hint">[*] nearest index</span></div>
+            <code id="variantWildcard">—</code>
+            <div class="variant-actions"><button class="btn-copy" type="button">Copy</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Zone C: Bottom Pane -->
+      <section class="zone-c" aria-label="Testing Sandbox">
+        <div class="zone-c-header">Test the JSON Paths:</div>
+        <div class="path-row">
+          <label for="pathInput">Path:</label>
+          <input id="pathInput" type="text" placeholder="e.g. $.data[0].attributes.title or $..title" spellcheck="false" autocomplete="off" />
+        </div>
+        <div class="output-header"><span>JSON Path Output</span><span id="pathStatus" class="hint"></span></div>
+        <textarea id="pathOutput" readonly placeholder="Result will appear here as JSON..."></textarea>
+      </section>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
