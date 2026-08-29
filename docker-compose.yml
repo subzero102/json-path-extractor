@@ -17,9 +17,8 @@ services:
       - certs:/etc/letsencrypt:ro
       - certbot-www:/var/www/certbot:ro
     ports:
-      - "213.210.21.177:80:8080"
-      - "213.210.21.177:8443:8080"
-      - "213.210.21.177:443:8443"
+      - "80:8080"
+      - "443:8443"
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/"]
@@ -45,13 +44,11 @@ services:
     image: certbot/certbot:latest
     container_name: jpe-certbot
     user: "0:0"
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot; sleep 12h & wait $!; done'"
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew --webroot -w /var/www/certbot --deploy-hook \"chmod -R a+rX /etc/letsencrypt/live /etc/letsencrypt/archive\"; sleep 12h & wait $!; done'"
     volumes:
       - certs:/etc/letsencrypt
       - certbot-www:/var/www/certbot
     restart: unless-stopped
-    depends_on:
-      - web
     deploy:
       resources:
         limits:

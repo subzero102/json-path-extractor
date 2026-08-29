@@ -3,46 +3,28 @@ set -e
 
 domains="extractjsonpath.com www.extractjsonpath.com"
 rsa_key_size=4096
-data_path="./certbot"
-email="subhankar102@gmail.com" # change this
-staging=0 # set to 1 while testing to avoid rate limits
+email="subhankar102@gmail.com"
+staging=0 # Set to 1 while testing to avoid Let's Encrypt rate limits
 
-if [ -d "$data_path/conf/live/extractjsonpath.com" ]; then
-  echo "Existing certificate found. Skipping bootstrap."
+echo "============================================================"
+echo " Let's Encrypt Bootstrap for: $domains"
+echo "============================================================"
+
+# Check if certificates already exist in the certs volume
+existing_cert=$(docker compose run --rm --entrypoint "sh -c 'if [ -f /etc/letsencrypt/live/extractjsonpath.com/fullchain.pem ]; then echo yes; else echo no; fi'" certbot 2>/dev/null || echo "no")
+
+if [ "$existing_cert" = "yes" ]; then
+  echo "Existing certificate found in volume. Ensuring permissions and starting stack..."
+  docker compose run --rm --entrypoint "chmod -R a+rX /etc/letsencrypt/live /etc/letsencrypt/archive" certbot
+  docker compose up -d
+  echo "Stack started successfully."
   exit 0
 fi
 
-if [ ! -f "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -f "$data_path/conf/ssl-dhparams.pem" ]; then
-  echo "Downloading recommended TLS parameters..."
-  mkdir -p "$data_path/conf"
-  curl -sSL https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
-  curl -sSL https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
-  echo
-fi
+# Stop any running web container to ensure host port 80 is completely free for standalone validation
+echo "Stopping web container to free port 80..."
+docker compose stop web 2>/dev/null || true
 
-echo "Creating dummy certificate for $domains..."
-path="/etc/letsencrypt/live/extractjsonpath.com"
-docker compose run --rm --entrypoint "\
-  mkdir -p '$path' && \
-  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1 \
-    -keyout '$path/privkey.pem' \
-    -out '$path/fullchain.pem' \
-    -subj '/CN=localhost'" certbot
-echo
-
-echo "Starting nginx..."
-docker compose up --force-recreate -d web
-echo
-
-echo "Deleting dummy certificate..."
-docker compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/extractjsonpath.com; \
-  rm -Rf /etc/letsencrypt/archive/extractjsonpath.com; \
-  rm -Rf /etc/letsencrypt/renewal/extractjsonpath.com.conf; \
-  true" certbot
-echo
-
-echo "Requesting Let's Encrypt certificate for $domains..."
 domain_args=""
 for domain in $domains; do
   domain_args="$domain_args -d $domain"
@@ -53,17 +35,30 @@ case "$email" in
   *) email_arg="--email $email" ;;
 esac
 
-if [ $staging != "0" ]; then staging_arg="--staging"; fi
+staging_arg=""
+if [ "$staging" != "0" ]; then
+  echo "--> Using Let's Encrypt staging server (dry-run/test mode)"
+  staging_arg="--staging"
+fi
 
-docker compose run --rm --entrypoint "\
-  certbot certonly --webroot -w /var/www/certbot \
-    $staging_arg \
-    $email_arg \
-    $domain_args \
-    --rsa-key-size $rsa_key_size \
-    --agree-tos \
-    --force-renewal" certbot
-echo
+echo "Requesting certificate from Let's Encrypt using standalone mode on port 80..."
+docker compose run --rm -p 80:80 certbot certonly \
+  --standalone \
+  $staging_arg \
+  $email_arg \
+  $domain_args \
+  --rsa-key-size "$rsa_key_size" \
+  --agree-tos \
+  --non-interactive
 
-echo "Reloading nginx..."
-docker compose exec web nginx -s reload
+echo "Fixing volume permissions so nginx-unprivileged (UID 101) can read certificates..."
+docker compose run --rm --entrypoint "chmod -R a+rX /etc/letsencrypt/live /etc/letsencrypt/archive" certbot
+
+echo "Starting web and certbot services..."
+docker compose up -d
+
+echo "============================================================"
+echo " Bootstrap complete! Services are up."
+echo " Check status with: docker compose ps"
+echo " Test with: curl -Iv https://extractjsonpath.com"
+echo "============================================================"

@@ -18,9 +18,9 @@ When the user says to push to main, commit the changes and run `git push origin 
 - **Requires:** Node.js 18+, npm, Docker
 - **Deployment (VPS 213.210.21.177, domain extractjsonpath.com):**
   - DNS A record `extractjsonpath.com` -> `213.210.21.177`
-  - Ports opened in VPS firewall: `443/tcp` (HTTPS), `8443/tcp` (HTTP, used for ACME HTTP-01 challenges)
-  - Container port mapping: host `443` -> container `8443` (TLS), host `8443` -> container `8080` (HTTP/ACME)
-  - First deploy: `./init-letsencrypt.sh`, then `docker compose up -d --build`
-  - Certbot auto-renews every 12h inside the `certbot` service
+  - Ports opened in VPS firewall: `80/tcp` (HTTP, used for ACME HTTP-01 and HTTPS redirect), `443/tcp` (HTTPS), `22/tcp` (SSH)
+  - Container port mapping: host `80` -> container `8080` (HTTP), host `443` -> container `8443` (TLS)
+  - First deploy: `./init-letsencrypt.sh` (obtains certificates and starts the stack)
+  - Certbot auto-renews every 12h inside the `certbot` service with permissions deploy-hook
 - **Layout:** `index.html` (entry), `src/` (source), `vite.config.js`, `Dockerfile`, `docker-compose.yml`, `nginx.conf`, `init-letsencrypt.sh`, `certbot/`
 - **Remote:** `https://github.com/subzero102/json-path-extractor.git` (default branch: `main`)
