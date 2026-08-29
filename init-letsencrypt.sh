@@ -36,9 +36,10 @@ echo
 
 echo "Deleting dummy certificate..."
 docker compose run --rm --entrypoint "\
-  rm -Rf /etc/letsencrypt/live/extractjsonpath.com && \
-  rm -Rf /etc/letsencrypt/archive/extractjsonpath.com && \
-  rm -Rf /etc/letsencrypt/renewal/extractjsonpath.com.conf" certbot
+  rm -Rf /etc/letsencrypt/live/extractjsonpath.com; \
+  rm -Rf /etc/letsencrypt/archive/extractjsonpath.com; \
+  rm -Rf /etc/letsencrypt/renewal/extractjsonpath.com.conf; \
+  true" certbot
 echo
 
 echo "Requesting Let's Encrypt certificate for $domains..."
