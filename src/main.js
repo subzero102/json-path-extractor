@@ -317,9 +317,12 @@ function handleTreeSearch() {
   for (const match of matches) {
     const item = document.createElement('div');
     item.className = 'tree-search-item';
-
-    const variants = generateVariants(match.path, parsedJSON);
-    const suggestedPath = variants.filter !== 'N/A' ? variants.filter : variants.absolute;
+    item.setAttribute('role', 'button');
+    item.setAttribute('tabindex', '0');
+    item.setAttribute(
+      'aria-label',
+      `Select search result ${match.matchVal || match.matchKey} for path ${suggestedPath}`
+    );
 
     const labelRow = document.createElement('div');
     labelRow.className = 'search-item-header';
@@ -344,12 +347,20 @@ function handleTreeSearch() {
     pathCode.textContent = suggestedPath;
     item.appendChild(pathCode);
 
-    item.addEventListener('click', () => {
+    const selectMatch = () => {
       hideTreeSearchResults();
       expandAndHighlightPath(treeContainer, match.path);
       onSelectPath(match.path);
       pathInput.value = suggestedPath;
       evaluateAndRender();
+    };
+
+    item.addEventListener('click', selectMatch);
+    item.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectMatch();
+      }
     });
 
     treeSearchResults.appendChild(item);
@@ -399,6 +410,12 @@ for (const [name, el] of Object.entries(variantEls)) {
   const row = el.closest('.variant');
   const copyBtn = row?.querySelector('.btn-copy');
   el.addEventListener('click', () => handleVariantClick(name));
+  el.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleVariantClick(name);
+    }
+  });
   copyBtn?.addEventListener('click', async (e) => {
     e.stopPropagation();
     const val = el.textContent;

@@ -13,8 +13,9 @@ function createDocIcon(curPath, onSelect) {
   btn.className = 'doc-icon';
   btn.type = 'button';
   btn.textContent = '📄';
-  btn.title = 'Generate JSONPath for this node';
-  btn.setAttribute('aria-label', 'Generate path');
+  const pathLabel = curPath.length > 0 ? curPath.join('.') : 'root';
+  btn.title = `Generate JSONPath for ${pathLabel}`;
+  btn.setAttribute('aria-label', `Generate JSONPath for ${pathLabel}`);
   btn.addEventListener('click', (e) => {
     e.stopPropagation();
     onSelect([...curPath]);
@@ -38,6 +39,10 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
   if (expandable) {
     toggle.textContent = '▶';
     toggle.classList.add('expandable');
+    toggle.setAttribute('role', 'button');
+    toggle.setAttribute('tabindex', '0');
+    toggle.setAttribute('aria-label', `Toggle node ${key !== null ? key : 'items'}`);
+    toggle.setAttribute('aria-expanded', 'false');
   } else {
     toggle.textContent = '';
   }
@@ -121,10 +126,12 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
       if (isCollapsed) {
         children.classList.remove('collapsed');
         toggle.textContent = '▼';
+        toggle.setAttribute('aria-expanded', 'true');
         line.classList.add('expanded');
       } else {
         children.classList.add('collapsed');
         toggle.textContent = '▶';
+        toggle.setAttribute('aria-expanded', 'false');
         line.classList.remove('expanded');
       }
     };
@@ -133,6 +140,13 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleFn();
+    });
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        toggleFn();
+      }
     });
 
     node.appendChild(children);
@@ -155,6 +169,10 @@ export function buildTree(data, container, onSelect) {
   const rootExpandable = isExpandable(data);
   if (rootExpandable) {
     rootToggle.textContent = '▼';
+    rootToggle.setAttribute('role', 'button');
+    rootToggle.setAttribute('tabindex', '0');
+    rootToggle.setAttribute('aria-label', 'Toggle root JSON container');
+    rootToggle.setAttribute('aria-expanded', 'true');
   } else {
     rootToggle.textContent = '';
   }
@@ -194,15 +212,24 @@ export function buildTree(data, container, onSelect) {
       if (isCollapsed) {
         rootChildren.classList.remove('collapsed');
         rootToggle.textContent = '▼';
+        rootToggle.setAttribute('aria-expanded', 'true');
       } else {
         rootChildren.classList.add('collapsed');
         rootToggle.textContent = '▶';
+        rootToggle.setAttribute('aria-expanded', 'false');
       }
     };
     rootLine.addEventListener('click', rootToggleFn);
     rootToggle.addEventListener('click', (e) => {
       e.stopPropagation();
       rootToggleFn();
+    });
+    rootToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        rootToggleFn();
+      }
     });
 
     rootLineWrap.appendChild(rootChildren);
