@@ -42,7 +42,7 @@ if [ "$staging" != "0" ]; then
 fi
 
 echo "Requesting certificate from Let's Encrypt using standalone mode on port 80..."
-docker compose run --rm -p 80:80 certbot certonly \
+docker compose run --rm -p 80:80 --entrypoint certbot certbot certonly \
   --standalone \
   $staging_arg \
   $email_arg \
