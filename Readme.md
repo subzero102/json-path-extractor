@@ -1,4 +1,4 @@
-# JSON PATH Extractor
+# JSONPath Extractor
 
 An interactive, client-side JSONPath tester. Paste JSON on the left, write a JSONPath expression, and inspect the extracted results on the right.
 

@@ -62,12 +62,15 @@
         "JSONPath extraction",
         "JSONPath query testing",
         "Automatic JSONPath generation",
+        "RFC 9535 standard compliance",
+        "Matched paths and evaluated values output",
         "JSON tree visualization",
         "Absolute JSONPath generation",
         "Bracket notation",
         "Recursive descent",
         "Array wildcard queries",
         "JSONPath filter expressions",
+        "JSONPath-Plus dialect support",
         "Client-side JSON processing"
       ]
     }
@@ -148,8 +151,8 @@
       ]
     }
     </script>
-    <script type="module" crossorigin src="/assets/index-CnhT3smM.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-DhMT1_qT.css">
+    <script type="module" crossorigin src="/assets/index-lnwtLDik.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C42Fn6Yj.css">
   </head>
   <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -158,7 +161,7 @@
         <div class="app-header-text">
           <h1>JSONPath Extractor &amp; Tester</h1>
           <span class="header-sub"
-            >Extract JSON data, generate JSONPath expressions, and test queries — 100% client-side</span
+            >Extract JSON data, generate JSONPath expressions, and test queries online — 100% client-side</span
           >
           <p class="header-lead">
             JSONPath Extractor is a free online tool for extracting data from JSON using JSONPath
@@ -189,6 +192,10 @@
                 <label for="jsonInput" class="card-header-label">
                   Provide the JSON here: <small>paste &amp; validate</small>
                 </label>
+                <div class="card-header-actions">
+                  <button type="button" id="loadSampleBtn" class="btn-card-action" title="Load sample JSON dataset">Sample</button>
+                  <button type="button" id="clearJsonBtn" class="btn-card-action" title="Clear JSON input">Clear</button>
+                </div>
               </div>
               <div class="card-body">
                 <div class="editor-wrap">
@@ -249,7 +256,7 @@
 
           <!-- Zone B: Middle Pane -->
           <section id="zoneB" class="zone-b" aria-label="JSONPath Variants">
-            <div class="zone-b-header">JSON Path Variants — click any path to test it</div>
+            <div class="zone-b-header">JSONPath Variants — click any path to test it</div>
             <div class="variants-grid">
               <div class="variant">
                 <div class="variant-label">Absolute <span class="hint">dot notation</span></div>
@@ -332,7 +339,7 @@
 
           <!-- Zone C: Bottom Pane -->
           <section class="zone-c" aria-label="JSONPath Testing Sandbox">
-            <div class="zone-c-header">Test the JSON Paths:</div>
+            <div class="zone-c-header">Test JSONPath Expressions:</div>
             <div class="path-row">
               <label for="pathInput">Path:</label>
               <input
@@ -345,8 +352,17 @@
               />
             </div>
             <div class="output-header">
-              <label for="pathOutput" id="pathOutputLabel">JSON Path Output</label>
-              <span id="pathStatus" class="hint" role="status" aria-live="polite"></span>
+              <div class="output-title-group">
+                <label for="pathOutput" id="pathOutputLabel">JSONPath Output</label>
+                <div class="output-mode-tabs" role="tablist" aria-label="Output View Mode">
+                  <button type="button" class="mode-tab active" id="modeValuesBtn" role="tab" aria-selected="true">Values</button>
+                  <button type="button" class="mode-tab" id="modePathsBtn" role="tab" aria-selected="false" title="Show exact matched JSONPath coordinates">Matched Paths</button>
+                </div>
+              </div>
+              <div class="output-actions">
+                <span id="pathStatus" class="hint" role="status" aria-live="polite"></span>
+                <button type="button" id="copyOutputBtn" class="btn-copy-output" title="Copy output to clipboard" aria-label="Copy output to clipboard">Copy</button>
+              </div>
             </div>
             <textarea
               id="pathOutput"
@@ -361,7 +377,7 @@
         <!-- Semantic SEO Content Section Below Interactive Tool -->
         <article class="seo-content" aria-labelledby="seo-guide-title">
           <header class="seo-intro">
-            <h2 id="seo-guide-title">How to Use the JSONPath Extractor</h2>
+            <h2 id="seo-guide-title">Explore JSONPath Extractor Features</h2>
             <p class="seo-lead">
               Extract values from nested JSON, generate JSONPath expressions automatically, and test JSONPath
               queries directly in your browser.
@@ -465,48 +481,60 @@
           <!-- Section: JSONPath Examples -->
           <section class="seo-card" id="jsonpath-examples">
             <h2>JSONPath Examples</h2>
-            <p>Here are common JSONPath expressions for extracting values from JSON objects and arrays.</p>
+            <p>
+              Explore and test common JSONPath queries for navigating nested objects, arrays, filters, and recursive searches.
+              Click <strong>Test</strong> on any query to load and evaluate it in the sandbox above.
+            </p>
             <div class="table-responsive">
               <table class="cheat-sheet-table">
-                <caption>Common JSONPath Examples</caption>
+                <caption>Common JSONPath Examples (Interactive)</caption>
                 <thead>
                   <tr>
-                    <th>JSONPath</th>
-                    <th>Purpose</th>
+                    <th scope="col">JSONPath Expression</th>
+                    <th scope="col">Query Purpose</th>
+                    <th scope="col">Interactive Test</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td><code>$</code></td>
-                    <td>Select the root JSON object or array.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$" title="Click to test in sandbox">$</code></td>
+                    <td>Select the entire root JSON object or array.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$" title="Test $ in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$.user.name</code></td>
-                    <td>Extract a nested property.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[*].title" title="Click to test in sandbox">$.store.book[*].title</code></td>
+                    <td>Extract the titles of all books in the store.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.store.book[*].title" title="Test $.store.book[*].title in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$.users[0]</code></td>
-                    <td>Select the first item in an array.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.users[*].name" title="Click to test in sandbox">$.users[*].name</code></td>
+                    <td>Extract the name of every user from the users array.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.users[*].name" title="Test $.users[*].name in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$.users[*]</code></td>
-                    <td>Select all items in an array.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[0]" title="Click to test in sandbox">$.store.book[0]</code></td>
+                    <td>Select the first item from an array.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.store.book[0]" title="Test $.store.book[0] in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$.users[*].name</code></td>
-                    <td>Extract the name of every user.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.users[*]" title="Click to test in sandbox">$.users[*]</code></td>
+                    <td>Select all items in the users array using a wildcard.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.users[*]" title="Test $.users[*] in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$..email</code></td>
-                    <td>Find email properties recursively.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$..email" title="Click to test in sandbox">$..email</code></td>
+                    <td>Find all email properties recursively at any depth.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$..email" title="Test $..email in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$.products[?(@.price &lt; 100)]</code></td>
-                    <td>Find products with a price below 100.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[?(@.price &lt; 10)]" title="Click to test in sandbox">$.store.book[?(@.price &lt; 10)]</code></td>
+                    <td>Filter books with a price strictly below 10.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.store.book[?(@.price &lt; 10)]" title="Test price filter in sandbox">Test</button></td>
                   </tr>
                   <tr>
-                    <td><code>$['user-name']</code></td>
-                    <td>Access a property using bracket notation.</td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.bicycle" title="Click to test in sandbox">$.store.bicycle</code></td>
+                    <td>Access a nested object property.</td>
+                    <td><button type="button" class="btn-try-example" data-try-path="$.store.bicycle" title="Test $.store.bicycle in sandbox">Test</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -538,7 +566,7 @@
                     <td>
                       Represents the root object or array from which all JSONPath expressions originate.
                     </td>
-                    <td><code>$</code> or <code>$.store.book</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$" title="Click to test in sandbox">$</code> or <code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book" title="Click to test in sandbox">$.store.book</code></td>
                   </tr>
                   <tr>
                     <td><code>@</code></td>
@@ -546,7 +574,7 @@
                     <td>
                       Refers to the current element being processed in a filter predicate or array iterator.
                     </td>
-                    <td><code>[?(@.price &lt; 20)]</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[?(@.price &lt; 20)]" title="Click to test in sandbox">[?(@.price &lt; 20)]</code></td>
                   </tr>
                   <tr>
                     <td><code>..</code></td>
@@ -555,7 +583,7 @@
                       Deep scan selector that traverses recursively across all child and descendant levels to
                       find matching keys.
                     </td>
-                    <td><code>$..author</code> or <code>$..id</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$..author" title="Click to test in sandbox">$..author</code> or <code class="clickable-code" role="button" tabindex="0" data-try-path="$..price" title="Click to test in sandbox">$..price</code></td>
                   </tr>
                   <tr>
                     <td><code>[*]</code></td>
@@ -563,7 +591,7 @@
                     <td>
                       Matches all elements contained in an array, or all property values within an object.
                     </td>
-                    <td><code>$.store.book[*]</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[*]" title="Click to test in sandbox">$.store.book[*]</code></td>
                   </tr>
                   <tr>
                     <td><code>[?()]</code></td>
@@ -571,13 +599,13 @@
                     <td>
                       Applies a logical boolean expression to filter items within an array or collection.
                     </td>
-                    <td><code>$.data[?(@.type == 'articles')]</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[?(@.category == 'fiction')]" title="Click to test in sandbox">$.store.book[?(@.category == 'fiction')]</code></td>
                   </tr>
                   <tr>
                     <td><code>*</code></td>
                     <td>Wildcard</td>
                     <td>Matches any property name or value at the current hierarchical level.</td>
-                    <td><code>$.store.*</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.*" title="Click to test in sandbox">$.store.*</code></td>
                   </tr>
                   <tr>
                     <td><code>['key']</code></td>
@@ -586,7 +614,7 @@
                       Selects a property by string key; essential for keys containing spaces, hyphens, or
                       special characters.
                     </td>
-                    <td><code>$['store']['book name']</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$['store']['bicycle']" title="Click to test in sandbox">$['store']['bicycle']</code></td>
                   </tr>
                   <tr>
                     <td><code>[start:end:step]</code></td>
@@ -594,7 +622,7 @@
                     <td>
                       Extracts a slice of array elements using start, end, and optional step indices.
                     </td>
-                    <td><code>$.books[0:2]</code></td>
+                    <td><code class="clickable-code" role="button" tabindex="0" data-try-path="$.store.book[0:2]" title="Click to test in sandbox">$.store.book[0:2]</code></td>
                   </tr>
                 </tbody>
               </table>
@@ -624,6 +652,84 @@
             </p>
           </section>
 
+          <!-- Section: RFC 9535 Standard & Engine Compatibility -->
+          <section class="seo-card" id="rfc-compatibility">
+            <h2>RFC 9535 Standard &amp; Dialect Compatibility</h2>
+            <p>
+              In 2024, the IETF formalized JSONPath as <strong>RFC 9535</strong>.
+              This extractor conforms to the RFC 9535 query specification powered by the modern <strong>JSONPath-Plus</strong>
+              engine, providing high-fidelity evaluation compatible with JavaScript, Node.js, Python, Java, and CLI environments.
+            </p>
+            <div class="table-responsive">
+              <table class="cheat-sheet-table">
+                <caption>JSONPath Specification Compatibility Matrix</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">Feature</th>
+                    <th scope="col">RFC 9535 Standard</th>
+                    <th scope="col">JSONPath-Plus Engine</th>
+                    <th scope="col">ExtractJSONPath Support</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Root Selector (<code>$</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Dot &amp; Bracket Notation (<code>.prop</code>, <code>['prop']</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Array Wildcards (<code>*</code>, <code>[*]</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Recursive Descent (<code>..</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Array Slicing (<code>[start:end:step]</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Comparison Filters (<code>[?(@.price &lt; 20)]</code>)</td>
+                    <td><span class="badge-compat yes">✓ Standard</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full</span></td>
+                  </tr>
+                  <tr>
+                    <td>Matched Node Path Coordinates</td>
+                    <td><span class="badge-compat info">Extension</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Full (Values &amp; Paths)</span></td>
+                  </tr>
+                  <tr>
+                    <td>Regular Expression Predicates (<code>=~ /.../</code>)</td>
+                    <td><span class="badge-compat info">Extension</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                    <td><span class="badge-compat yes">✓ Supported</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="compatibility-note">
+              <strong>Need exact node coordinates?</strong> Switch the output viewer from <strong>Values</strong> to
+              <strong>Matched Paths</strong> to inspect the exact normalized path strings (e.g. <code>$['store']['book'][0]</code>)
+              for all matched items across the document.
+            </p>
+          </section>
+
           <!-- Section: What is JSONPath? -->
           <section class="seo-card" id="what-is-jsonpath">
             <h2>What is JSONPath?</h2>
@@ -641,6 +747,64 @@
               Instead of manually traversing a JSON object in code, a JSONPath expression lets you describe
               exactly which data you want to retrieve.
             </p>
+          </section>
+
+          <!-- Section: Developer Use Cases & Integrations -->
+          <section class="seo-card" id="use-cases">
+            <h2>Common JSONPath Use Cases &amp; Integrations</h2>
+            <p>
+              JSONPath is widely utilized across web development, DevOps automation, API quality assurance, and ETL pipelines:
+            </p>
+            <div class="use-cases-grid">
+              <div class="use-case-card">
+                <div class="use-case-icon">⚡</div>
+                <h3>REST &amp; GraphQL APIs</h3>
+                <p>
+                  Extract nested response fields from microservice API endpoints without writing custom traversal scripts.
+                  Quickly inspect status attributes, user identifiers, and pagination cursors.
+                </p>
+              </div>
+              <div class="use-case-card">
+                <div class="use-case-icon">🧪</div>
+                <h3>Postman &amp; API Testing</h3>
+                <p>
+                  Prototype and validate JSONPath selectors before writing test assertions in Postman, Newman,
+                  Playwright, or Cypress test suites.
+                </p>
+              </div>
+              <div class="use-case-card">
+                <div class="use-case-icon">☸️</div>
+                <h3>Kubernetes (kubectl)</h3>
+                <p>
+                  Test query expressions for <code>kubectl get pods -o jsonpath='{...}'</code> commands to inspect
+                  pod IPs, container images, node labels, and cluster state.
+                </p>
+              </div>
+              <div class="use-case-card">
+                <div class="use-case-icon">🔀</div>
+                <h3>Webhooks &amp; Event Payloads</h3>
+                <p>
+                  Filter event payloads from Stripe, GitHub Actions, Shopify, or AWS EventBridge by matching specific
+                  event attributes or status codes.
+                </p>
+              </div>
+              <div class="use-case-card">
+                <div class="use-case-icon">📊</div>
+                <h3>ETL &amp; Log Processing</h3>
+                <p>
+                  Query and transform streaming JSON records, parse cloud application logs in Datadog or AWS CloudWatch,
+                  and isolate error stacks.
+                </p>
+              </div>
+              <div class="use-case-card">
+                <div class="use-case-icon">🔒</div>
+                <h3>100% Private Client-Side Debugging</h3>
+                <p>
+                  Debug proprietary or production JSON payloads safely. Because all processing executes in your browser
+                  without sending network requests, your sensitive data remains completely confidential.
+                </p>
+              </div>
+            </div>
           </section>
 
           <!-- Section: Why Use This Tool? -->
@@ -749,7 +913,9 @@
             <a href="#extract-json-data">Extract Data</a>
             <a href="#jsonpath-examples">Examples</a>
             <a href="#syntax-cheat-sheet">Syntax</a>
+            <a href="#rfc-compatibility">RFC 9535</a>
             <a href="#what-is-jsonpath">What is JSONPath?</a>
+            <a href="#use-cases">Use Cases</a>
             <a href="#why-use">Why Use</a>
             <a href="#privacy-first">Privacy</a>
             <a href="#faq">FAQ</a>

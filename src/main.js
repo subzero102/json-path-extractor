@@ -47,34 +47,62 @@ const variantEls = {
   filter: document.getElementById('variantFilter'),
 };
 
+const modeValuesBtn = document.getElementById('modeValuesBtn');
+const modePathsBtn = document.getElementById('modePathsBtn');
+const copyOutputBtn = document.getElementById('copyOutputBtn');
+const loadSampleBtn = document.getElementById('loadSampleBtn');
+const clearJsonBtn = document.getElementById('clearJsonBtn');
+
 let parsedJSON = null;
 let hasValidJSON = false;
+let currentOutputMode = 'values';
+let lastEvaluation = { result: null, paths: null, error: null, empty: true };
 
 const defaultJSON = `{
-  "data": [{
-    "type": "articles",
-    "id": "1",
-    "attributes": {
-      "title": "JSON:API paints my bikeshed!",
-      "body": "The shortest article. Ever.",
-      "created": "2015-05-22T14:56:29.000Z",
-      "updated": "2015-05-22T14:56:28.000Z"
-    },
-    "relationships": {
-      "author": {
-        "data": { "id": "42", "type": "people" }
+  "store": {
+    "book": [
+      {
+        "category": "reference",
+        "author": "Nigel Rees",
+        "title": "Sayings of the Century",
+        "price": 8.95
+      },
+      {
+        "category": "fiction",
+        "author": "Evelyn Waugh",
+        "title": "Sword of Honour",
+        "price": 12.99
+      },
+      {
+        "category": "fiction",
+        "author": "Herman Melville",
+        "title": "Moby Dick",
+        "isbn": "0-553-21311-3",
+        "price": 8.99
+      },
+      {
+        "category": "fiction",
+        "author": "J. R. R. Tolkien",
+        "title": "The Lord of the Rings",
+        "isbn": "0-395-19395-8",
+        "price": 22.99
       }
+    ],
+    "bicycle": {
+      "color": "red",
+      "price": 19.95
     }
-  }],
-  "included": [
+  },
+  "users": [
     {
-      "type": "people",
-      "id": "42",
-      "attributes": {
-        "name": "John",
-        "age": 80,
-        "gender": "male"
-      }
+      "name": "John",
+      "age": 30,
+      "email": "john@example.com"
+    },
+    {
+      "name": "Sarah",
+      "age": 25,
+      "email": "sarah@example.com"
     }
   ]
 }`;
@@ -106,19 +134,13 @@ function handleVariantClick(variantName) {
   evaluateAndRender();
 }
 
-function evaluateAndRender() {
-  const pathStr = pathInput.value;
+function renderOutputContent() {
   if (!hasValidJSON) {
     pathOutput.value = 'No valid JSON loaded. Fix the JSON in the left pane first.';
     pathStatus.textContent = '';
     return;
   }
-  if (!pathStr.trim()) {
-    pathOutput.value = '';
-    pathStatus.textContent = '';
-    return;
-  }
-  const { result, error, empty } = evaluate(parsedJSON, pathStr);
+  const { result, paths, error, empty } = lastEvaluation;
   if (empty) {
     pathOutput.value = '';
     pathStatus.textContent = '';
@@ -128,12 +150,33 @@ function evaluateAndRender() {
     pathOutput.value = `Error: ${error}`;
     pathStatus.textContent = 'Error';
     pathStatus.style.color = 'var(--error)';
-  } else {
-    const count = Array.isArray(result) ? result.length : 0;
-    pathOutput.value = stringifyResult(result);
-    pathStatus.textContent = `${count} result${count !== 1 ? 's' : ''}`;
-    pathStatus.style.color = 'var(--muted)';
+    return;
   }
+  const count = Array.isArray(result) ? result.length : (result !== null && result !== undefined ? 1 : 0);
+  pathStatus.textContent = `${count} result${count !== 1 ? 's' : ''}`;
+  pathStatus.style.color = 'var(--muted)';
+
+  if (currentOutputMode === 'paths') {
+    pathOutput.value = stringifyResult(paths || []);
+  } else {
+    pathOutput.value = stringifyResult(result);
+  }
+}
+
+function evaluateAndRender() {
+  const pathStr = pathInput.value;
+  if (!hasValidJSON) {
+    lastEvaluation = { result: null, paths: null, error: null, empty: true };
+    renderOutputContent();
+    return;
+  }
+  if (!pathStr.trim()) {
+    lastEvaluation = { result: null, paths: null, error: null, empty: true };
+    renderOutputContent();
+    return;
+  }
+  lastEvaluation = evaluate(parsedJSON, pathStr);
+  renderOutputContent();
 }
 
 function resetTreeSearch() {
@@ -315,6 +358,8 @@ function handleTreeSearch() {
 
   treeSearchResults.innerHTML = '';
   for (const match of matches) {
+    const variants = generateVariants(match.path, parsedJSON);
+    const suggestedPath = variants.absolute || '$';
     const item = document.createElement('div');
     item.className = 'tree-search-item';
     item.setAttribute('role', 'button');
@@ -449,3 +494,86 @@ themeToggle?.addEventListener('click', () => {
   setSavedTheme(next);
   themeToggle.setAttribute('aria-label', `Switch to ${current} mode`);
 });
+
+// Output mode switching (Values vs Matched Paths)
+modeValuesBtn?.addEventListener('click', () => {
+  currentOutputMode = 'values';
+  modeValuesBtn.classList.add('active');
+  modeValuesBtn.setAttribute('aria-selected', 'true');
+  modePathsBtn?.classList.remove('active');
+  modePathsBtn?.setAttribute('aria-selected', 'false');
+  renderOutputContent();
+});
+
+modePathsBtn?.addEventListener('click', () => {
+  currentOutputMode = 'paths';
+  modePathsBtn.classList.add('active');
+  modePathsBtn.setAttribute('aria-selected', 'true');
+  modeValuesBtn?.classList.remove('active');
+  modeValuesBtn?.setAttribute('aria-selected', 'false');
+  renderOutputContent();
+});
+
+// Copy Output
+copyOutputBtn?.addEventListener('click', async () => {
+  const val = pathOutput.value;
+  if (!val) return;
+  try {
+    await navigator.clipboard.writeText(val);
+    const prev = copyOutputBtn.textContent;
+    copyOutputBtn.textContent = 'Copied!';
+    copyOutputBtn.classList.add('copied');
+    setTimeout(() => {
+      copyOutputBtn.textContent = prev;
+      copyOutputBtn.classList.remove('copied');
+    }, 1200);
+  } catch {}
+});
+
+// Zone A Header Actions
+loadSampleBtn?.addEventListener('click', () => {
+  jsonInput.value = defaultJSON;
+  renderTreeFromText(defaultJSON);
+  setVariants([]);
+});
+
+clearJsonBtn?.addEventListener('click', () => {
+  jsonInput.value = '';
+  renderTreeFromText('');
+  setVariants([]);
+  jsonInput.focus();
+});
+
+// Interactive Examples across the documentation
+function initInteractiveExamples() {
+  const elements = document.querySelectorAll('[data-try-path]');
+  elements.forEach((el) => {
+    const handleTry = (e) => {
+      e.preventDefault();
+      const path = el.getAttribute('data-try-path');
+      if (!path) return;
+      if (!hasValidJSON || !jsonInput.value.trim()) {
+        jsonInput.value = defaultJSON;
+        renderTreeFromText(defaultJSON);
+      }
+      pathInput.value = path;
+      evaluateAndRender();
+      const zoneC = document.getElementById('zoneC') || pathInput;
+      zoneC.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      pathInput.focus();
+      pathInput.classList.add('flash-focus');
+      setTimeout(() => pathInput.classList.remove('flash-focus'), 1000);
+    };
+
+    el.addEventListener('click', handleTry);
+    if (el.tagName === 'CODE' && el.getAttribute('role') === 'button') {
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          handleTry(e);
+        }
+      });
+    }
+  });
+}
+initInteractiveExamples();
+

@@ -1,4 +1,4 @@
-name: Deploy JSON Path Extractor to VPS
+name: Deploy JSONPath Extractor to VPS
 on:
   push:
     branches:
