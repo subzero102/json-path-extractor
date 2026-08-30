@@ -3,27 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JSONPath Extractor &amp; Tester - Evaluate JSON Path Online</title>
+    <title>JSONPath Extractor &amp; Tester – Extract JSON Data Online</title>
     <meta
       name="description"
-      content="Free online JSONPath extractor and tester. Safely evaluate, debug, and extract data from complex JSON files directly in your browser. 100% client-side secure."
+      content="Free JSONPath extractor and tester. Extract data from JSON, generate JSONPath expressions, and test queries instantly. Your JSON stays in your browser."
     />
     <link rel="canonical" href="https://extractjsonpath.com/" />
     <meta name="robots" content="index, follow" />
     <meta name="author" content="JSONPath Extractor" />
-    <meta
-      name="keywords"
-      content="extract json path, extract json path online, JSONPath extractor, JSONPath tester, evaluate JSONPath online, JSON path evaluator, JSONPath syntax cheat sheet, client-side JSONPath"
-    />
     <meta name="google-site-verification" content="CouZGxV-4XwSz9PVywr6s3NMWjYrtlyGMQXQeAGyaLY" />
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://extractjsonpath.com/" />
-    <meta property="og:title" content="JSONPath Extractor &amp; Tester - Evaluate JSON Path Online" />
+    <meta property="og:title" content="JSONPath Extractor &amp; Tester – Extract JSON Data Online" />
     <meta
       property="og:description"
-      content="Free online JSONPath extractor and tester. Safely evaluate, debug, and extract data from complex JSON files directly in your browser. 100% client-side secure."
+      content="Free JSONPath extractor and tester. Extract data from JSON, generate JSONPath expressions, and test queries instantly. Your JSON stays in your browser."
     />
     <meta property="og:site_name" content="JSONPath Extractor" />
     <meta property="og:image" content="https://extractjsonpath.com/favicon.png" />
@@ -31,10 +27,10 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://extractjsonpath.com/" />
-    <meta name="twitter:title" content="JSONPath Extractor &amp; Tester - Evaluate JSON Path Online" />
+    <meta name="twitter:title" content="JSONPath Extractor &amp; Tester – Extract JSON Data Online" />
     <meta
       name="twitter:description"
-      content="Free online JSONPath extractor and tester. Safely evaluate, debug, and extract data from complex JSON files directly in your browser. 100% client-side secure."
+      content="Free JSONPath extractor and tester. Extract data from JSON, generate JSONPath expressions, and test queries instantly. Your JSON stays in your browser."
     />
     <meta name="twitter:image" content="https://extractjsonpath.com/favicon.png" />
 
@@ -51,25 +47,39 @@
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
-      "name": "JSONPath Extractor & Tester - Evaluate JSON Path Online",
+      "name": "JSONPath Extractor & Tester",
       "url": "https://extractjsonpath.com/",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "All",
-      "browserRequirements": "Requires JavaScript. Requires HTML5.",
-      "softwareVersion": "1.0.0",
-      "description": "Free online JSONPath extractor and tester. Safely evaluate, debug, and extract data from complex JSON files directly in your browser. 100% client-side secure.",
+      "browserRequirements": "Requires JavaScript and HTML5",
+      "description": "Free online JSONPath extractor and tester for extracting data from JSON, generating JSONPath expressions, and testing JSONPath queries.",
       "offers": {
         "@type": "Offer",
-        "price": "0.00",
+        "price": "0",
         "priceCurrency": "USD"
       },
       "featureList": [
-        "Interactive JSONPath evaluation",
-        "Real-time syntax validation",
-        "Automatic path variant generation",
-        "Deep scan and recursive descent queries",
-        "100% client-side secure data processing"
+        "JSONPath extraction",
+        "JSONPath query testing",
+        "Automatic JSONPath generation",
+        "JSON tree visualization",
+        "Absolute JSONPath generation",
+        "Bracket notation",
+        "Recursive descent",
+        "Array wildcard queries",
+        "JSONPath filter expressions",
+        "Client-side JSON processing"
       ]
+    }
+    </script>
+
+    <!-- Structured Data: WebSite Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "JSONPath Extractor",
+      "url": "https://extractjsonpath.com/"
     }
     </script>
 
@@ -84,15 +94,55 @@
           "name": "What is JSONPath?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "JSONPath is an expression language for querying and extracting specific elements, properties, and values from JSON documents. Similar to XPath for XML, JSONPath provides a standardized syntax to traverse tree-like data structures, filter array items, and extract targeted data without manual traversal."
+            "text": "JSONPath is a query language used to navigate and extract data from JSON documents. It provides expressions for selecting properties, arrays, nested objects, and values."
           }
         },
         {
           "@type": "Question",
-          "name": "Is this JSONPath evaluator secure?",
+          "name": "What is a JSONPath extractor?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Yes, completely. This JSONPath extractor operates 100% client-side directly within your web browser. None of your JSON data, payloads, or query expressions are ever uploaded, transmitted, or logged on remote servers. All parsing, path synthesis, and evaluation occur locally on your machine."
+            "text": "A JSONPath extractor is a tool that uses JSONPath expressions to select and extract specific data from a JSON document."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I extract a value from JSON?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Paste your JSON into the extractor and use a JSONPath expression to identify the value you want. For example, $.user.name selects the name property from a user object."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How do I extract all values from a JSON array?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Use the JSONPath wildcard operator. For example, $.users[*] selects every item in the users array, while $.users[*].name extracts the name from every user."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I test JSONPath expressions online?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. Paste your JSON into the JSONPath Extractor, enter a JSONPath expression, and the matching results are displayed immediately."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is this JSONPath extractor free?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The JSONPath Extractor is free to use and does not require an account."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my JSON uploaded to a server?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. JSON processing is performed locally in your browser and your JSON payload is not uploaded to our servers."
           }
         }
       ]
@@ -104,8 +154,15 @@
     <div class="app">
       <header class="app-header">
         <div class="app-header-text">
-          <h1>Extract JSON Path Online — JSONPath Extractor &amp; Tester</h1>
-          <span class="header-sub">Safely extract JSON path values from nested data — 100% client-side &amp; secure</span>
+          <h1>JSONPath Extractor &amp; Tester</h1>
+          <span class="header-sub"
+            >Extract JSON data, generate JSONPath expressions, and test queries — 100% client-side</span
+          >
+          <p class="header-lead">
+            JSONPath Extractor is a free online tool for extracting data from JSON using JSONPath
+            expressions. Paste your JSON, explore the structure, automatically generate JSONPath
+            expressions, or test your own queries and see the results instantly.
+          </p>
         </div>
         <button
           id="themeToggle"
@@ -302,39 +359,22 @@
         <!-- Semantic SEO Content Section Below Interactive Tool -->
         <article class="seo-content" aria-labelledby="seo-guide-title">
           <header class="seo-intro">
-            <h2 id="seo-guide-title">How to Extract JSON Path: Developer Guide &amp; Technical Reference</h2>
+            <h2 id="seo-guide-title">How to Use the JSONPath Extractor</h2>
             <p class="seo-lead">
-              The fastest way to extract JSON path queries, evaluate complex filters, and inspect hierarchical structures
-              directly in your browser.
+              Extract values from nested JSON, generate JSONPath expressions automatically, and test JSONPath
+              queries directly in your browser.
             </p>
           </header>
 
-          <!-- Section 1: What is JSONPath? -->
-          <section class="seo-card" id="what-is-jsonpath">
-            <h2>What is JSONPath?</h2>
-            <p>
-              When you need to <strong>extract JSON path</strong> expressions from complex, nested payloads,
-              <strong>JSONPath</strong> provides a standardized declarative query language. Similar to what XPath
-              delivers for XML, JSONPath gives developers and data engineers a straightforward syntax to navigate
-              hierarchical documents, isolate targeted nodes, filter elements within arrays, and extract exact data
-              points without writing manual traversal loops.
-            </p>
-            <p>
-              From inspecting microservice payloads and debugging REST API responses to automating
-              end-to-end integration tests, this tool lets you extract JSON path values and validate query results
-              with zero latency.
-            </p>
-          </section>
-
-          <!-- Section 2: How to Use This Tool -->
+          <!-- Section: How to Use -->
           <section class="seo-card" id="how-to-use">
-            <h2>How to Use This Tool to Extract JSON Path Expressions</h2>
-            <p>Extract JSON path data and debug your expressions effortlessly with our 3-step workflow:</p>
+            <h2>How to Use the JSONPath Extractor</h2>
+            <p>Extract data from JSON and test JSONPath expressions in three simple steps.</p>
             <ol class="steps-grid">
               <li class="step-card">
                 <div class="step-badge" aria-hidden="true">1</div>
                 <div class="step-body">
-                  <h3>Paste JSON</h3>
+                  <h3>Paste Your JSON</h3>
                   <p>
                     Paste or type your JSON document directly into the editor pane on the left. The
                     built-in parser automatically validates formatting, highlights syntax errors in real
@@ -345,7 +385,7 @@
               <li class="step-card">
                 <div class="step-badge" aria-hidden="true">2</div>
                 <div class="step-body">
-                  <h3>Write Expression</h3>
+                  <h3>Generate or Enter a JSONPath</h3>
                   <p>
                     Input your target JSONPath query in the sandbox input field, or simply click the copy
                     icon next to any node in the tree viewer to automatically generate absolute,
@@ -356,7 +396,7 @@
               <li class="step-card">
                 <div class="step-badge" aria-hidden="true">3</div>
                 <div class="step-body">
-                  <h3>View Results</h3>
+                  <h3>View the Extracted Data</h3>
                   <p>
                     Instantly inspect matched nodes, arrays, or primitive values in the output console
                     below. The tool calculates match counts and displays formatted results in real time with
@@ -367,12 +407,116 @@
             </ol>
           </section>
 
-          <!-- Section 3: JSONPath Syntax Cheat Sheet -->
-          <section class="seo-card" id="syntax-cheat-sheet">
-            <h2>JSONPath Syntax Cheat Sheet</h2>
+          <!-- Section: Automatically Generate JSONPath Expressions -->
+          <section class="seo-card" id="generate-jsonpath">
+            <h2>Automatically Generate JSONPath Expressions</h2>
             <p>
-              Compare standard JSONPath operators, recursive descent notations, wildcards, and filter
-              expressions in the reference table below:
+              Finding the correct JSONPath expression manually can be difficult when working with large and
+              deeply nested JSON documents. This tool makes it easier by displaying your JSON as an
+              interactive tree.
+            </p>
+            <p>
+              Click a property or value in the JSON tree to generate its JSONPath. The extractor can provide
+              multiple path variants, including absolute paths, bracket notation, recursive descent, array
+              wildcards, and filter expressions.
+            </p>
+            <p>
+              Copy the generated expression and use it in your application, API tests, scripts, automation
+              workflows, or development tools.
+            </p>
+          </section>
+
+          <!-- Section: Extract JSON Data with JSONPath -->
+          <section class="seo-card" id="extract-json-data">
+            <h2>Extract JSON Data with JSONPath</h2>
+            <p>
+              JSONPath makes it easy to extract specific values from deeply nested JSON. Start with the root
+              symbol <code>$</code> and use property names, array indexes, wildcards, recursive descent, and
+              filters to select the data you need.
+            </p>
+            <h3>Example JSON</h3>
+            <pre><code>{
+  "users": [
+    {
+      "name": "John",
+      "age": 30,
+      "email": "john@example.com"
+    },
+    {
+      "name": "Sarah",
+      "age": 25,
+      "email": "sarah@example.com"
+    }
+  ]
+}</code></pre>
+            <h3>Extract all user names</h3>
+            <p>Use the following JSONPath expression:</p>
+            <pre><code>$.users[*].name</code></pre>
+            <p>The result is:</p>
+            <pre><code>["John", "Sarah"]</code></pre>
+            <p>
+              You can use the JSONPath Extractor above to experiment with this expression and test it against
+              your own JSON documents.
+            </p>
+          </section>
+
+          <!-- Section: JSONPath Examples -->
+          <section class="seo-card" id="jsonpath-examples">
+            <h2>JSONPath Examples</h2>
+            <p>Here are common JSONPath expressions for extracting values from JSON objects and arrays.</p>
+            <div class="table-responsive">
+              <table class="cheat-sheet-table">
+                <caption>Common JSONPath Examples</caption>
+                <thead>
+                  <tr>
+                    <th>JSONPath</th>
+                    <th>Purpose</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>$</code></td>
+                    <td>Select the root JSON object or array.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$.user.name</code></td>
+                    <td>Extract a nested property.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$.users[0]</code></td>
+                    <td>Select the first item in an array.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$.users[*]</code></td>
+                    <td>Select all items in an array.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$.users[*].name</code></td>
+                    <td>Extract the name of every user.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$..email</code></td>
+                    <td>Find email properties recursively.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$.products[?(@.price &lt; 100)]</code></td>
+                    <td>Find products with a price below 100.</td>
+                  </tr>
+                  <tr>
+                    <td><code>$['user-name']</code></td>
+                    <td>Access a property using bracket notation.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Section: JSONPath Syntax and Operators -->
+          <section class="seo-card" id="syntax-cheat-sheet">
+            <h2>JSONPath Syntax and Operators</h2>
+            <p>
+              Learn the most commonly used JSONPath operators for navigating JSON, selecting arrays, matching
+              properties, recursively searching nested data, and filtering results.
             </p>
             <div class="table-responsive">
               <table class="cheat-sheet-table">
@@ -453,48 +597,139 @@
                 </tbody>
               </table>
             </div>
+            <h3>JSONPath Root Operator</h3>
+            <p>
+              The <code>$</code> symbol represents the root of a JSON document. For example,
+              <code>$.user.name</code> selects the <code>name</code> property inside the root-level
+              <code>user</code> object.
+            </p>
+            <h3>JSONPath Wildcard</h3>
+            <p>
+              The <code>*</code> wildcard matches properties or array elements at the current level. For
+              example, <code>$.users[*].name</code> extracts the name property from every item in the users
+              array.
+            </p>
+            <h3>JSONPath Recursive Descent</h3>
+            <p>
+              The <code>..</code> operator searches recursively through nested objects and arrays. For
+              example, <code>$..email</code> can locate email properties regardless of their depth within the
+              JSON document.
+            </p>
+            <h3>JSONPath Filter Expressions</h3>
+            <p>
+              Filter expressions allow you to select array elements based on conditions. For example,
+              <code>$.products[?(@.price &lt; 100)]</code> selects products whose price is less than 100.
+            </p>
           </section>
 
-          <!-- Section 4: Privacy First -->
+          <!-- Section: What is JSONPath? -->
+          <section class="seo-card" id="what-is-jsonpath">
+            <h2>What is JSONPath?</h2>
+            <p>
+              JSONPath is a query language for navigating and extracting data from JSON documents. It provides
+              expressions for selecting properties, array elements, nested objects, and values from complex
+              JSON structures.
+            </p>
+            <p>
+              JSONPath is often compared to XPath for XML. Developers commonly use it when working with REST
+              API responses, configuration files, application logs, automated tests, and other structured JSON
+              data.
+            </p>
+            <p>
+              Instead of manually traversing a JSON object in code, a JSONPath expression lets you describe
+              exactly which data you want to retrieve.
+            </p>
+          </section>
+
+          <!-- Section: Why Use This Tool? -->
+          <section class="seo-card" id="why-use">
+            <h2>Why Use This JSONPath Extractor?</h2>
+            <ul>
+              <li>
+                <strong>Automatic JSONPath generation:</strong> Click JSON nodes to generate useful path
+                expressions.
+              </li>
+              <li>
+                <strong>Interactive JSON tree:</strong> Explore deeply nested JSON without manually searching
+                through raw text.
+              </li>
+              <li><strong>JSONPath testing:</strong> Enter your own expressions and immediately inspect the results.</li>
+              <li>
+                <strong>Multiple path formats:</strong> Generate absolute, bracket, wildcard, recursive, and
+                filter expressions.
+              </li>
+              <li><strong>Private:</strong> JSON processing happens directly in your browser.</li>
+              <li><strong>No account required:</strong> Open the tool and start working with JSON immediately.</li>
+            </ul>
+          </section>
+
+          <!-- Section: Privacy First -->
           <section class="seo-card" id="privacy-first">
-            <h2>Privacy First</h2>
+            <h2>Private JSONPath Testing</h2>
             <div class="privacy-container">
               <div class="privacy-icon-wrapper" aria-hidden="true">🔒</div>
               <div class="privacy-text">
                 <p>
-                  <strong>100% Client-Side Processing:</strong> Your data security and privacy are completely
-                  protected. This JSONPath testing tool runs entirely in your web browser using local
-                  client-side JavaScript. No JSON data, payloads, or query expressions are ever transmitted
-                  to, stored on, or processed by any external server.
+                  <strong>Your JSON stays in your browser.</strong> JSON parsing, JSONPath generation, and
+                  query evaluation are performed locally on your device. Your JSON payload is not uploaded to
+                  our servers.
                 </p>
                 <p>
-                  Feel completely safe testing proprietary JSON payloads, production API tokens, customer
-                  records, and confidential configurations directly within your private browser environment.
+                  This makes the tool useful for testing API responses, configuration files, development data,
+                  and other JSON documents that you may not want to send to a third-party service.
                 </p>
               </div>
             </div>
           </section>
 
-          <!-- Section 5: Frequently Asked Questions -->
+          <!-- Section: Frequently Asked Questions -->
           <section class="seo-card" id="faq">
-            <h2>Frequently Asked Questions</h2>
+            <h2>Frequently Asked Questions About JSONPath</h2>
             <div class="faq-list">
               <article class="faq-item">
                 <h3>What is JSONPath?</h3>
                 <p>
-                  JSONPath is an expression language for querying and extracting specific elements,
-                  properties, and values from JSON documents. Similar to XPath for XML, JSONPath provides a
-                  standardized syntax to traverse tree-like data structures, filter array items, and extract
-                  targeted data without manual traversal.
+                  JSONPath is a query language used to navigate and extract data from JSON documents. It
+                  provides expressions for selecting properties, arrays, nested objects, and values.
                 </p>
               </article>
               <article class="faq-item">
-                <h3>Is this JSONPath evaluator secure?</h3>
+                <h3>What is a JSONPath extractor?</h3>
                 <p>
-                  Yes, completely. This JSONPath extractor operates 100% client-side directly within your web
-                  browser. None of your JSON data, payloads, or query expressions are ever uploaded,
-                  transmitted, or logged on remote servers. All parsing, path synthesis, and evaluation occur
-                  locally on your machine.
+                  A JSONPath extractor is a tool that uses JSONPath expressions to select and extract
+                  specific data from a JSON document.
+                </p>
+              </article>
+              <article class="faq-item">
+                <h3>How do I extract a value from JSON?</h3>
+                <p>
+                  Paste your JSON into the extractor and use a JSONPath expression to identify the value you
+                  want. For example, <code>$.user.name</code> selects the name property from a user object.
+                </p>
+              </article>
+              <article class="faq-item">
+                <h3>How do I extract all values from a JSON array?</h3>
+                <p>
+                  Use the JSONPath wildcard operator. For example, <code>$.users[*]</code> selects every item
+                  in the users array, while <code>$.users[*].name</code> extracts the name from every user.
+                </p>
+              </article>
+              <article class="faq-item">
+                <h3>Can I test JSONPath expressions online?</h3>
+                <p>
+                  Yes. Paste your JSON into the JSONPath Extractor, enter a JSONPath expression, and the
+                  matching results are displayed immediately.
+                </p>
+              </article>
+              <article class="faq-item">
+                <h3>Is this JSONPath extractor free?</h3>
+                <p>Yes. The JSONPath Extractor is free to use and does not require an account.</p>
+              </article>
+              <article class="faq-item">
+                <h3>Is my JSON uploaded to a server?</h3>
+                <p>
+                  No. JSON processing is performed locally in your browser and your JSON payload is not
+                  uploaded to our servers.
                 </p>
               </article>
             </div>
@@ -507,9 +742,13 @@
           <p>&copy; 2026 JSONPath Extractor &amp; Tester. 100% client-side secure.</p>
           <nav class="footer-links" aria-label="Footer navigation">
             <a href="#main-content">Top</a>
-            <a href="#what-is-jsonpath">What is JSONPath?</a>
             <a href="#how-to-use">How to Use</a>
-            <a href="#syntax-cheat-sheet">Syntax Cheat Sheet</a>
+            <a href="#generate-jsonpath">Generate JSONPath</a>
+            <a href="#extract-json-data">Extract Data</a>
+            <a href="#jsonpath-examples">Examples</a>
+            <a href="#syntax-cheat-sheet">Syntax</a>
+            <a href="#what-is-jsonpath">What is JSONPath?</a>
+            <a href="#why-use">Why Use</a>
             <a href="#privacy-first">Privacy</a>
             <a href="#faq">FAQ</a>
           </nav>

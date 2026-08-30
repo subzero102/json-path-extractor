@@ -138,6 +138,14 @@ button{font-family:inherit}
   letter-spacing:-0.02em;
 }
 .header-sub{color:var(--muted); font-size:13px}
+.header-lead{
+  margin:6px 0 0;
+  font-size:13.5px;
+  color:var(--muted);
+  line-height:1.6;
+  max-width:860px;
+  text-align:left;
+}
 .theme-toggle{
   flex-shrink:0;
   width:40px;
@@ -774,6 +782,48 @@ button{font-family:inherit}
 .seo-card p:last-child{
   margin-bottom:0;
 }
+.seo-card h3{
+  margin:18px 0 8px;
+  font-size:15.5px;
+  font-weight:600;
+  color:var(--text);
+}
+.seo-card h3:first-of-type{
+  margin-top:4px;
+}
+.seo-card ul{
+  margin:10px 0 0;
+  padding-left:22px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.seo-card li{
+  font-size:14px;
+  line-height:1.6;
+  color:var(--text);
+}
+.seo-card pre{
+  margin:12px 0;
+  padding:14px;
+  background:var(--card-alt);
+  border:1px solid var(--border);
+  border-radius:8px;
+  overflow-x:auto;
+  font-family:var(--mono);
+  font-size:12.5px;
+  line-height:1.6;
+  color:var(--text);
+  white-space:pre;
+}
+.seo-card pre code{
+  background:none;
+  border:none;
+  padding:0;
+  font-size:inherit;
+  color:inherit;
+}
+
 
 /* Steps Grid (How to Use This Tool) */
 .steps-grid{
@@ -1013,4 +1063,5 @@ button{font-family:inherit}
   .tree-scroll{max-height:380px}
   .card{min-height:auto}
   .seo-lead{font-size:14px}
+  .header-lead{font-size:13px}
 }
