@@ -9,24 +9,40 @@ function getPreview(value) {
 }
 
 const COPY_ICON_SVG =
-  '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+  '<svg width="12" height="12" aria-hidden="true"><use href="#icon-copy-symbol"></use></svg>';
 
-function createDocIcon(curPath, onSelect) {
+function createDocIcon(curPath) {
   const btn = document.createElement('button');
   btn.className = 'doc-icon';
   btn.type = 'button';
+  btn.dataset.action = 'select-path';
+  btn.dataset.path = JSON.stringify(curPath);
   btn.innerHTML = COPY_ICON_SVG;
   const pathLabel = curPath.length > 0 ? curPath.join('.') : 'root';
   btn.title = `Generate JSONPath for ${pathLabel}`;
   btn.setAttribute('aria-label', `Generate JSONPath for ${pathLabel}`);
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    onSelect([...curPath]);
-  });
   return btn;
 }
 
-function createNode(value, key, curPath, onSelect, isArrayParent) {
+function renderChildrenInto(container, value, curPath, isArray) {
+  const frag = document.createDocumentFragment();
+  if (isArray) {
+    for (let idx = 0; idx < value.length; idx++) {
+      const child = value[idx];
+      const childPath = [...curPath, String(idx)];
+      frag.appendChild(createNode(child, String(idx), childPath, true));
+    }
+  } else {
+    for (const [k, v] of Object.entries(value)) {
+      const childPath = [...curPath, String(k)];
+      frag.appendChild(createNode(v, k, childPath, false));
+    }
+  }
+  container.appendChild(frag);
+  container.dataset.rendered = 'true';
+}
+
+function createNode(value, key, curPath, isArrayParent) {
   const node = document.createElement('div');
   node.className = 'tree-node';
   if (key !== null) {
@@ -42,6 +58,7 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
   if (expandable) {
     toggle.textContent = '▶';
     toggle.classList.add('expandable');
+    toggle.dataset.action = 'toggle';
     toggle.setAttribute('role', 'button');
     toggle.setAttribute('tabindex', '0');
     toggle.setAttribute('aria-label', `Toggle node ${key !== null ? key : 'items'}`);
@@ -66,8 +83,6 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
     colon.className = 'tree-colon';
     line.appendChild(keySpan);
     line.appendChild(colon);
-  } else {
-    // root primitive or root container without key — no key label
   }
 
   const valueSpan = document.createElement('span');
@@ -98,80 +113,90 @@ function createNode(value, key, curPath, onSelect, isArrayParent) {
 
   const comma = document.createElement('span');
   comma.className = 'tree-comma';
-  // comma visual only; CSS handles separators
   line.appendChild(comma);
 
-  const icon = createDocIcon(curPath, onSelect);
+  const icon = createDocIcon(curPath);
   line.appendChild(icon);
 
   node.appendChild(line);
 
   if (expandable) {
+    node._value = value;
+    node._path = curPath;
+    node._isArray = Array.isArray(value);
+
     const children = document.createElement('div');
     children.className = 'tree-children collapsed';
-
-    if (Array.isArray(value)) {
-      value.forEach((child, idx) => {
-        const childPath = [...curPath, String(idx)];
-        const childNode = createNode(child, String(idx), childPath, onSelect, true);
-        children.appendChild(childNode);
-      });
-    } else {
-      for (const [k, v] of Object.entries(value)) {
-        const childPath = [...curPath, String(k)];
-        const childNode = createNode(v, k, childPath, onSelect, false);
-        children.appendChild(childNode);
-      }
-    }
-
-    const toggleFn = () => {
-      const isCollapsed = children.classList.contains('collapsed');
-      if (isCollapsed) {
-        children.classList.remove('collapsed');
-        toggle.textContent = '▼';
-        toggle.setAttribute('aria-expanded', 'true');
-        line.classList.add('expanded');
-      } else {
-        children.classList.add('collapsed');
-        toggle.textContent = '▶';
-        toggle.setAttribute('aria-expanded', 'false');
-        line.classList.remove('expanded');
-      }
-    };
-
-    line.addEventListener('click', toggleFn);
-    toggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleFn();
-    });
-    toggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        e.stopPropagation();
-        toggleFn();
-      }
-    });
-
     node.appendChild(children);
   }
 
   return node;
 }
 
+export function ensureNodeExpanded(node) {
+  if (!node) return;
+  const children = node.querySelector(':scope > .tree-children');
+  const line = node.querySelector(':scope > .tree-line');
+  const toggle = line?.querySelector('.tree-toggle');
+
+  if (children && node._value !== undefined && !children.dataset.rendered) {
+    renderChildrenInto(children, node._value, node._path, node._isArray);
+  }
+
+  if (children && children.classList.contains('collapsed')) {
+    children.classList.remove('collapsed');
+    if (toggle) {
+      toggle.textContent = '▼';
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    line?.classList.add('expanded');
+  }
+}
+
+function toggleTreeNode(node) {
+  if (!node) return;
+  const children = node.querySelector(':scope > .tree-children');
+  const line = node.querySelector(':scope > .tree-line');
+  const toggle = line?.querySelector('.tree-toggle');
+  if (!children) return;
+
+  const isCollapsed = children.classList.contains('collapsed');
+  if (isCollapsed) {
+    if (node._value !== undefined && !children.dataset.rendered) {
+      renderChildrenInto(children, node._value, node._path, node._isArray);
+    }
+    children.classList.remove('collapsed');
+    if (toggle) {
+      toggle.textContent = '▼';
+      toggle.setAttribute('aria-expanded', 'true');
+    }
+    line?.classList.add('expanded');
+  } else {
+    children.classList.add('collapsed');
+    if (toggle) {
+      toggle.textContent = '▶';
+      toggle.setAttribute('aria-expanded', 'false');
+    }
+    line?.classList.remove('expanded');
+  }
+}
+
 export function buildTree(data, container, onSelect) {
   container.innerHTML = '';
   const frag = document.createDocumentFragment();
 
-  // Add root $ line with icon
-  const rootLineWrap = document.createElement('div');
-  rootLineWrap.className = 'tree-node root-node';
+  // Root node
+  const rootNode = document.createElement('div');
+  rootNode.className = 'tree-node root-node';
   const rootLine = document.createElement('div');
   rootLine.className = 'tree-line root-line';
   const rootToggle = document.createElement('span');
   rootToggle.className = 'tree-toggle expandable';
   const rootExpandable = isExpandable(data);
+
   if (rootExpandable) {
     rootToggle.textContent = '▼';
+    rootToggle.dataset.action = 'toggle';
     rootToggle.setAttribute('role', 'button');
     rootToggle.setAttribute('tabindex', '0');
     rootToggle.setAttribute('aria-label', 'Toggle root JSON container');
@@ -180,66 +205,80 @@ export function buildTree(data, container, onSelect) {
     rootToggle.textContent = '';
   }
   rootLine.appendChild(rootToggle);
+
   const rootKey = document.createElement('span');
   rootKey.className = 'tree-key root-key';
   rootKey.textContent = '{root}';
   rootLine.appendChild(rootKey);
+
   const rootVal = document.createElement('span');
   rootVal.className = 'tree-value val-bracket';
   if (Array.isArray(data)) rootVal.textContent = ` [${data.length}]`;
   else if (data !== null && typeof data === 'object') rootVal.textContent = ` {${Object.keys(data).length}}`;
   else rootVal.textContent = '';
   rootLine.appendChild(rootVal);
-  const rootIcon = createDocIcon([], onSelect);
+
+  const rootIcon = createDocIcon([]);
   rootLine.appendChild(rootIcon);
-  rootLineWrap.appendChild(rootLine);
+  rootNode.appendChild(rootLine);
 
   if (rootExpandable) {
     const rootChildren = document.createElement('div');
-    rootChildren.className = 'tree-children'; // root expanded by one level
-
-    if (Array.isArray(data)) {
-      data.forEach((child, idx) => {
-        const childPath = [String(idx)];
-        rootChildren.appendChild(createNode(child, String(idx), childPath, onSelect, true));
-      });
-    } else {
-      for (const [k, v] of Object.entries(data)) {
-        const childPath = [String(k)];
-        rootChildren.appendChild(createNode(v, k, childPath, onSelect, false));
-      }
-    }
-
-    const rootToggleFn = () => {
-      const isCollapsed = rootChildren.classList.contains('collapsed');
-      if (isCollapsed) {
-        rootChildren.classList.remove('collapsed');
-        rootToggle.textContent = '▼';
-        rootToggle.setAttribute('aria-expanded', 'true');
-      } else {
-        rootChildren.classList.add('collapsed');
-        rootToggle.textContent = '▶';
-        rootToggle.setAttribute('aria-expanded', 'false');
-      }
-    };
-    rootLine.addEventListener('click', rootToggleFn);
-    rootToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      rootToggleFn();
-    });
-    rootToggle.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        e.stopPropagation();
-        rootToggleFn();
-      }
-    });
-
-    rootLineWrap.appendChild(rootChildren);
+    rootChildren.className = 'tree-children';
+    // Render top 1-level children immediately so user sees the initial structure
+    renderChildrenInto(rootChildren, data, [], Array.isArray(data));
+    rootNode.appendChild(rootChildren);
   }
 
-  frag.appendChild(rootLineWrap);
+  frag.appendChild(rootNode);
   container.appendChild(frag);
+
+  // Set up single delegated event handler on container if not already attached
+  if (!container._hasDelegatedListener) {
+    container._hasDelegatedListener = true;
+
+    container.addEventListener('click', (e) => {
+      const docIcon = e.target.closest('.doc-icon');
+      if (docIcon) {
+        e.stopPropagation();
+        if (container._onSelect && docIcon.dataset.path) {
+          try {
+            const parsedPath = JSON.parse(docIcon.dataset.path);
+            container._onSelect(parsedPath);
+          } catch {}
+        }
+        return;
+      }
+
+      const toggle = e.target.closest('.tree-toggle.expandable');
+      if (toggle) {
+        e.stopPropagation();
+        const treeNode = toggle.closest('.tree-node');
+        toggleTreeNode(treeNode);
+        return;
+      }
+
+      const line = e.target.closest('.tree-line');
+      if (line) {
+        const treeNode = line.closest('.tree-node');
+        toggleTreeNode(treeNode);
+      }
+    });
+
+    container.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        const toggle = e.target.closest('.tree-toggle.expandable');
+        if (toggle) {
+          e.preventDefault();
+          e.stopPropagation();
+          const treeNode = toggle.closest('.tree-node');
+          toggleTreeNode(treeNode);
+        }
+      }
+    });
+  }
+
+  container._onSelect = onSelect;
 }
 
 export function clearTree(container, message = 'No valid JSON') {
@@ -251,14 +290,9 @@ export function expandAndHighlightPath(container, pathArray) {
 
   // Ensure root is expanded
   const rootNode = container.querySelector('.root-node');
-  const rootLine = rootNode?.querySelector('.root-line');
-  const rootChildren = rootNode?.querySelector(':scope > .tree-children');
-  if (rootChildren && rootChildren.classList.contains('collapsed')) {
-    rootChildren.classList.remove('collapsed');
-    const rootToggle = rootLine?.querySelector('.tree-toggle');
-    if (rootToggle) rootToggle.textContent = '▼';
-  }
+  ensureNodeExpanded(rootNode);
 
+  const rootChildren = rootNode?.querySelector(':scope > .tree-children');
   let currentParent = rootChildren;
   let targetLine = null;
 
@@ -271,21 +305,15 @@ export function expandAndHighlightPath(container, pathArray) {
     if (!childNode) break;
 
     const line = childNode.querySelector(':scope > .tree-line');
-    const children = childNode.querySelector(':scope > .tree-children');
 
     if (i === pathArray.length - 1) {
       targetLine = line;
     }
 
-    if (children && i < pathArray.length - 1) {
-      // Expand ancestor
-      children.classList.remove('collapsed');
-      const toggle = line?.querySelector('.tree-toggle');
-      if (toggle && toggle.classList.contains('expandable')) {
-        toggle.textContent = '▼';
-      }
-      line?.classList.add('expanded');
-      currentParent = children;
+    if (i < pathArray.length - 1) {
+      // Ensure ancestor is expanded (triggers lazy render if needed)
+      ensureNodeExpanded(childNode);
+      currentParent = childNode.querySelector(':scope > .tree-children');
     }
   }
 

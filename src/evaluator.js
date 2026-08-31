@@ -1,6 +1,6 @@
 import { JSONPath } from 'jsonpath-plus';
 
-export function evaluate(json, pathStr) {
+export function evaluate(json, pathStr, mode = 'values') {
   if (!pathStr || !pathStr.trim()) {
     return { result: null, paths: null, error: null, empty: true };
   }
@@ -10,14 +10,25 @@ export function evaluate(json, pathStr) {
   try {
     const result = JSONPath({ path: pathStr, json, resultType: 'value' });
     let paths = null;
-    try {
-      paths = JSONPath({ path: pathStr, json, resultType: 'path' });
-    } catch {
-      paths = [];
+    if (mode === 'paths') {
+      try {
+        paths = JSONPath({ path: pathStr, json, resultType: 'path' });
+      } catch {
+        paths = [];
+      }
     }
     return { result, paths, error: null, empty: false };
   } catch (e) {
     return { result: null, paths: null, error: e.message || String(e), empty: false };
+  }
+}
+
+export function evaluatePathsOnly(json, pathStr) {
+  if (!pathStr || !pathStr.trim() || json === null || json === undefined) return [];
+  try {
+    return JSONPath({ path: pathStr, json, resultType: 'path' }) || [];
+  } catch {
+    return [];
   }
 }
 

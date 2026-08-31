@@ -1,7 +1,7 @@
 import './style.css';
 import { buildTree, clearTree, expandAndHighlightPath, searchJSON } from './treeBuilder.js';
 import { generateVariants } from './pathVariants.js';
-import { evaluate, stringifyResult } from './evaluator.js';
+import { evaluate, evaluatePathsOnly, stringifyResult } from './evaluator.js';
 
 const THEME_KEY = 'json-path-extractor:theme';
 const DEFAULT_THEME = 'dark';
@@ -175,7 +175,7 @@ function evaluateAndRender() {
     renderOutputContent();
     return;
   }
-  lastEvaluation = evaluate(parsedJSON, pathStr);
+  lastEvaluation = evaluate(parsedJSON, pathStr, currentOutputMode);
   renderOutputContent();
 }
 
@@ -323,7 +323,8 @@ jsonInput.addEventListener('scroll', () => {
   jsonHighlight.scrollLeft = jsonInput.scrollLeft;
 });
 
-pathInput.addEventListener('input', evaluateAndRender);
+const debouncedEvaluate = debounce(evaluateAndRender, 100);
+pathInput.addEventListener('input', debouncedEvaluate);
 
 // Tree search logic
 function hideTreeSearchResults() {
@@ -511,6 +512,9 @@ modePathsBtn?.addEventListener('click', () => {
   modePathsBtn.setAttribute('aria-selected', 'true');
   modeValuesBtn?.classList.remove('active');
   modeValuesBtn?.setAttribute('aria-selected', 'false');
+  if (lastEvaluation.paths === null && lastEvaluation.result !== null && hasValidJSON) {
+    lastEvaluation.paths = evaluatePathsOnly(parsedJSON, pathInput.value);
+  }
   renderOutputContent();
 });
 

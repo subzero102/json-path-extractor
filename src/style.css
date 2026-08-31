@@ -854,6 +854,8 @@ button{font-family:inherit}
   border-radius:var(--radius);
   padding:24px;
   box-shadow:var(--shadow);
+  content-visibility:auto;
+  contain-intrinsic-size:0 350px;
 }
 .seo-card h2{
   margin:0 0 14px;
